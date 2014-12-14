@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>ExpressionFusion</id>
+        <version>0.1.0</version>
+        <title>Expression Fusion</title>
+        <authors>Chris Cain</authors>
+        <licenseUrl>https://github.com/Zshazz/ExpressionFusion/blob/6579feaa66128c8e5c100ecec3e7113170fa09b5/LICENSE</licenseUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Library for partial application/combination of C# expressions.</description>
+        <releaseNotes>Initial Release</releaseNotes>
+        <copyright>Copyright © Chris Cain 2014</copyright>
+        <language>en-US</language>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.0.0.0" />
+            <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.0.0.0" />
+        </frameworkAssemblies>
+    </metadata>
+    <files>
+        <file src="bin\Release\ExpressionFusion.dll" target="lib\ExpressionFusion.dll" />
+    </files>
+</package>
