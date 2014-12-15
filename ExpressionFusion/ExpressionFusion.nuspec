@@ -12,8 +12,8 @@
         <copyright>Copyright © Chris Cain 2014</copyright>
         <language>en-US</language>
         <frameworkAssemblies>
-            <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.0.0.0" />
-            <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.0.0.0" />
+            <frameworkAssembly assemblyName="System" />
+            <frameworkAssembly assemblyName="System.Core" />
         </frameworkAssemblies>
     </metadata>
     <files>
