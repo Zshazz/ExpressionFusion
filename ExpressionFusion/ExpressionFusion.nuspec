@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>ExpressionFusion</id>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
         <title>Expression Fusion</title>
         <authors>Chris Cain</authors>
         <licenseUrl>https://github.com/Zshazz/ExpressionFusion/blob/6579feaa66128c8e5c100ecec3e7113170fa09b5/LICENSE</licenseUrl>
