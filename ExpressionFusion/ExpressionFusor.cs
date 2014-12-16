@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using ExpressionFusion.ExpressionVisitors;
 using ExtraConstraints;
 using JetBrains.Annotations;
 
@@ -43,56 +43,6 @@ namespace ExpressionFusion
             var visitedExpr = new FusorVisitor(inputExpr, planExpr).VisitAndConvert(planBodyAsLambda, "FuseInto");
             Debug.Assert(visitedExpr != null);
             return Expression.Lambda<TOutputFunction>(visitedExpr.Body, visitedExpr.Parameters);
-        }
-
-        private class FusorVisitor : ExpressionVisitor
-        {
-            private readonly ParameterExpression _planParam;
-            private readonly LambdaExpression _inputExpr;
-
-            internal FusorVisitor([NotNull] LambdaExpression inputExpr, [NotNull] LambdaExpression plan)
-            {
-                Debug.Assert(plan.Parameters.Count == 1 && inputExpr.Type == plan.Parameters[0].Type);
-                _planParam = plan.Parameters[0];
-                _inputExpr = inputExpr;
-            }
-
-            protected override Expression VisitInvocation([NotNull] InvocationExpression node)
-            {
-                if(node.Expression != _planParam)
-                    return base.VisitInvocation(node);
-                return new ApplyParametersVisitor(_inputExpr, node).Visit(_inputExpr.Body);
-            }
-
-            protected override Expression VisitParameter([NotNull] ParameterExpression node)
-            {
-                if (node == _planParam)
-                    throw new FusionDanglingReferenceException(string.Format("All usages of {0} must be invocations.", _planParam.Name));
-                return base.VisitParameter(node);
-            }
-        }
-
-        private class ApplyParametersVisitor : ExpressionVisitor
-        {
-            private readonly IDictionary<ParameterExpression, Expression> _paramsMapper;
-
-            internal ApplyParametersVisitor([NotNull] LambdaExpression inputExpr, [NotNull] InvocationExpression targetExpr)
-            {
-                var paramsCount = inputExpr.Parameters.Count;
-                Debug.Assert(paramsCount == inputExpr.Parameters.Count);
-                _paramsMapper = new Dictionary<ParameterExpression, Expression>(paramsCount);
-                for (var i = 0; i < paramsCount; ++i)
-                    _paramsMapper[inputExpr.Parameters[i]] = targetExpr.Arguments[i];
-
-            }
-
-            protected override Expression VisitParameter([NotNull] ParameterExpression node)
-            {
-                Expression target;
-                if (_paramsMapper.TryGetValue(node, out target))
-                    return Visit(target);
-                return base.VisitParameter(node);
-            }
         }
     }
 
