@@ -51,6 +51,7 @@
     <Compile Include="ExpressionFusor.cs" />
     <Compile Include="ExpressionVisitors\ApplyParametersVisitor.cs" />
     <Compile Include="ExpressionVisitors\FusorVisitor.cs" />
+    <Compile Include="FusionDanglingReferenceException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
