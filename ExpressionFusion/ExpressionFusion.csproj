@@ -51,16 +51,29 @@
     <Compile Include="ExpressionFusor.cs" />
     <Compile Include="ExpressionVisitors\ApplyParametersVisitor.cs" />
     <Compile Include="ExpressionVisitors\FusorVisitor.cs" />
+    <Compile Include="ExpressionVisitors\PartialApplyVisitor.cs" />
     <Compile Include="FusionDanglingReferenceException.cs" />
+    <Compile Include="PartialApplication.cs" />
+    <Compile Include="PartialExpressionAppliers.g.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PartialExpressionAppliers.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
+    <Content Include="PartialExpressionAppliers.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PartialExpressionAppliers.g.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.26.2\build\Fody.targets" Condition="Exists('..\packages\Fody.1.26.2\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

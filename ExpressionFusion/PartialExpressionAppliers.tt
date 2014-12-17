@@ -1,0 +1,108 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".g.cs" #>
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using JetBrains.Annotations;
+
+namespace ExpressionFusion {
+	public static partial class Appliers
+	{
+	<#
+    for(var i = 0; i <= 16; ++i)
+	{
+		var typeList = Enumerable.Range(1, i).Select(num => "T" + num).Union(new []{"TR"}).ToList();
+		var typeListStr = string.Join(", ", typeList);
+	#>
+
+		public static Applier<<#= typeListStr #>> Partial<<#= typeListStr #>>([NotNull] this Expression<Func<<#= typeListStr #>>> inputExpr)
+		{
+			return new Applier<<#= typeListStr #>> { FixedArgs = new List<Expression>(), InputExpression = inputExpr };
+		}
+	<#}#>
+
+	}
+    <#
+    for(var i = 0; i <= 16; ++i)
+	{
+		var typeList = Enumerable.Range(1, i).Select(num => "T" + num).Union(new []{"TR"}).ToList();
+    #>
+
+    public struct Applier<<#= string.Join(", ", typeList) #>>
+    {
+        internal IList<Expression> FixedArgs; 
+        internal LambdaExpression InputExpression;
+
+        private void Validate()
+        {
+            if (FixedArgs == null || InputExpression == null)
+                throw new InvalidOperationException("Applier isn't intended to be instantiated outside of ExpressionFusion.");
+        }
+
+        public Expression<Func<<#= string.Join(", ", typeList) #>>> Result
+        {
+            get
+            {
+                Validate();
+                return ApplierHelpers.Build(InputExpression, FixedArgs) as Expression<Func<<#= string.Join(", ", typeList) #>>>;
+            }
+        }
+		<# for(var j = 1; j <= Math.Min(i, 4); ++j)
+		{
+			var headList = typeList.Take(j).ToList();
+			var tailList = typeList.Skip(j).ToList();
+		#>
+
+        private Applier<<#= string.Join(", ", tailList) #>> NextApplier(<#= string.Join(", ", headList.Select(t => "Expression expr" + t.ToLower())) #>)
+        {
+            Validate();
+            var newFixedArgs = new List<Expression>(FixedArgs)
+            {
+                <#= string.Join(", ", headList.Select(t => "expr" + t.ToLower())) #>
+            };
+            return new Applier<<#= string.Join(", ", tailList) #>>
+            {
+                FixedArgs = newFixedArgs,
+                InputExpression = InputExpression,
+            };
+        }
+
+		<# foreach(var currList in PermutationsOfTypesAsExpressions(headList)) {#>
+
+		public Applier<<#= string.Join(", ", tailList) #>> Apply(
+			<#= string.Join(", ", currList.Select(item => (item.isExpression ? "Expression<" + item.typeName + ">" : item.typeName) + " arg" + item.typeName.ToLower() ) ) #>)
+        {
+            return NextApplier(<#= string.Join(", ", currList.Select(item => (item.isExpression ? "arg" + item.typeName.ToLower() : "Expression.Constant(" + "arg" + item.typeName.ToLower() + ")") )) #>);
+        }
+		<#}#>
+		<#}#>
+
+    }
+    <#}#>
+
+}
+
+<#+
+		public struct IsExpressionPermutationItem
+        {
+            public bool isExpression;
+            public string typeName;
+        }
+
+        public IEnumerable<List<IsExpressionPermutationItem>> PermutationsOfTypesAsExpressions(IList<string> typeNames)
+        {
+            var iterationTop = 1u << typeNames.Count;
+            for (uint i = 0; i < iterationTop; ++i)
+            {
+                var list = typeNames.Select((t, j) => new IsExpressionPermutationItem()
+                {
+                    isExpression = ((1u << j) & i) > 0, typeName = t,
+                }).ToList();
+                yield return list;
+            }
+        }
+#>
